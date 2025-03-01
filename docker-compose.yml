@@ -1,0 +1,21 @@
+services:
+  ollama-rocm:
+    image: registry.dubtek.de:5050/git/rocm-ollama:latest
+    container_name: ollama-rocm
+    environment:
+      - OLLAMA_DEBUG="1"
+      - OLLAMA_KV_CACHE_TYPE="q8_0"
+    volumes:
+      - /opt/llm-dl:/opt/llm-dl
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+      - render
+    ipc: host
+    security_opt:
+      - seccomp:unconfined
+    network_mode: host
+    restart: always
+    

@@ -1,0 +1,29 @@
+diff --git a/discover/amd_linux.go b/discover/amd_linux.go
+index ee1444c9..56453b46 100644
+--- a/discover/amd_linux.go
++++ b/discover/amd_linux.go
+@@ -51,6 +51,7 @@ var (
+ 	// APUvalidForGTT contains the list of GPU architectures that support GTT memory allocation
+ 	APUvalidForGTT = []string{
+ 		"gfx1103", // Radeon 890m, 780m, 760m, 740m (RDNA3)
++		"gfx1150", // RDNA3+
+ 		"gfx1151", // RDNA3+
+ 		"gfx1152", // RDNA3+
+ 		"gfx1037", // Radeon 610M (RDNA2)
+@@ -380,16 +381,6 @@ func AMDGetGPUInfo() ([]RocmGPUInfo, error) {
+ 			index:        gpuID,
+ 		}
+ 
+-		// iGPU detection, remove this check once we can support an iGPU variant of the rocm library
+-		if totalMemory < IGPUMemLimit {
+-			reason := "unsupported Radeon iGPU detected skipping"
+-			slog.Info(reason, "id", gpuID, "total", format.HumanBytes2(totalMemory))
+-			unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{
+-				GpuInfo: gpuInfo.GpuInfo,
+-				Reason:  reason,
+-			})
+-			continue
+-		}
+ 		minVer, err := strconv.Atoi(RocmComputeMajorMin)
+ 		if err != nil {
+ 			slog.Error("invalid RocmComputeMajorMin setting", "value", RocmComputeMajorMin, "error", err)
