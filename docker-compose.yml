@@ -3,8 +3,7 @@ services:
     image: registry.dubtek.de:5050/git/rocm-ollama:latest
     container_name: ollama-rocm
     environment:
-      - OLLAMA_DEBUG="1"
-      - OLLAMA_KV_CACHE_TYPE="q8_0"
+      - OLLAMA_DEBUG=1
     volumes:
       - /opt/llm-dl:/opt/llm-dl
     devices:
