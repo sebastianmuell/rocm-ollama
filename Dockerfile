@@ -1,7 +1,7 @@
 # Dockerfile for building Ollama with ROCm and GTT support
 # ready to serve home assistant
 # Source: https://github.com/ollama/ollama
-# Source: https://github.com/Maciej-Mogilany/ollama
+# Source: https://github.com/Maciej-Mogilany/ollama / https://github.com/rjmalagon/ollama-linux-amd-apu
 
 FROM CI_REGISTRY/git/rocm-base:latest
 
@@ -14,7 +14,7 @@ ENV HIP_ARCHS="$AMDGPU_TARGETS"
 RUN apt-get -qq update && \
     apt-get install -qqy --no-install-recommends \
     golang \
-    make && \
+    cmake && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN git config --global user.email "gitlab@gitlab.local" && \
 	git config --global user.name "gitlab bot"
@@ -25,15 +25,12 @@ WORKDIR $WDIR/
 COPY src/*.patch $WDIR/
 
 # Install Ollama
-RUN git clone https://github.com/Maciej-Mogilany/ollama.git && cd ollama && \
-	git checkout AMD_APU_GTT_memory && \
-	git remote add github https://github.com/ollama/ollama && \
-	git fetch github && \
-	git config pull.rebase true && \
-	# pinned to v0.5.7, due to problems with newer versions \
-	git pull github v0.5.7  && \
+RUN git clone https://github.com/rjmalagon/ollama-linux-amd-apu ollama && cd ollama && \
 	git apply $WDIR/ollama.patch && \
-	make -j4
+	cmake --preset 'ROCm 6' -DAMDGPU_TARGETS=$AMDGPU_TARGETS && \
+	cmake --build --parallel --preset 'ROCm 6' && \
+	cmake --install build --component HIP --strip && \
+	( go run . list || true )
 
 # Set ENV
 ENV OLLAMA_FLASH_ATTENTION=1
@@ -48,7 +45,7 @@ ENV SCARF_NO_ANALYTICS=True
 VOLUME $OLLAMA_MODELS
 
 # Set ENTRYPOINT
-ENTRYPOINT ["sh", "-c", "cd /$WDIR/ollama; ./ollama serve"]
+ENTRYPOINT ["sh", "-c", "cd /$WDIR/ollama; go run . serve"]
 
 ## Build using:
 # docker build -t piper-rocm .

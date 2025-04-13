@@ -1,5 +1,34 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e2447f32..28200d75 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -97,7 +97,7 @@ if(CMAKE_HIP_COMPILER)
+ 
+     find_package(hip REQUIRED)
+     if(NOT AMDGPU_TARGETS)
+-        list(FILTER AMDGPU_TARGETS INCLUDE REGEX "^gfx(900|94[012]|101[02]|1030|110[012]|120[01])$")
++        list(FILTER AMDGPU_TARGETS INCLUDE REGEX "^gfx(900|94[012]|101[02]|1030|110[012]|115[01]|120[01])$")
+     elseif(WIN32 AND WINDOWS_AMDGPU_TARGETS_EXCLUDE_REGEX)
+         list(FILTER AMDGPU_TARGETS EXCLUDE REGEX ${WINDOWS_AMDGPU_TARGETS_EXCLUDE_REGEX})
+     endif()
+diff --git a/CMakePresets.json b/CMakePresets.json
+index bf99917f..862aea0c 100644
+--- a/CMakePresets.json
++++ b/CMakePresets.json
+@@ -54,10 +54,7 @@
+     },
+     {
+       "name": "ROCm 6",
+-      "inherits": [ "ROCm" ],
+-      "cacheVariables": {
+-        "AMDGPU_TARGETS": "gfx900;gfx940;gfx941;gfx942;gfx1010;gfx1012;gfx1030;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201;gfx906:xnack-;gfx908:xnack-;gfx90a:xnack+;gfx90a:xnack-"
+-      }
++      "inherits": [ "ROCm" ]
+     }
+   ],
+   "buildPresets": [
 diff --git a/discover/amd_linux.go b/discover/amd_linux.go
-index 34af59d0..9076a92d 100644
+index 46fba55b..cfd4dea0 100644
 --- a/discover/amd_linux.go
 +++ b/discover/amd_linux.go
 @@ -51,6 +51,7 @@ var (
@@ -10,7 +39,7 @@ index 34af59d0..9076a92d 100644
  		"gfx1151", // RDNA3+
  		"gfx1152", // RDNA3+
  		"gfx1037", // Radeon 610M (RDNA2)
-@@ -379,16 +380,6 @@ func AMDGetGPUInfo() ([]RocmGPUInfo, error) {
+@@ -378,16 +379,6 @@ func AMDGetGPUInfo() ([]RocmGPUInfo, error) {
  			index:        gpuID,
  		}
  

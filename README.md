@@ -27,9 +27,11 @@ Ollama Team - for maintaining and developing ollama
 
 Maciej-Mogilany - fork of Ollama with GTT memory support, see https://github.com/Maciej-Mogilany/ollama/tree/AMD_APU_GTT_memory
 
+Ricardo Jesus Malagon Jerez - patched fork of Ollama with GTT memory support, see https://github.com/rjmalagon/ollama-linux-amd-apu
+
 ## License
 GPLv3
 
 ## Project status
-- Pinned to ollama branch v0.5.7 due to problems with newer versions, hopefully the GTT memory fix will be merged upstream soon.
 - Not actively maintained.
+- Based on a patched fork of Ollama, hopefully the GTT memory fix will be merged upstream soon.
