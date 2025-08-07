@@ -34,4 +34,3 @@ GPLv3
 
 ## Project status
 - Not actively maintained.
-- Based on a patched fork of Ollama, hopefully the GTT memory fix will be merged upstream soon.

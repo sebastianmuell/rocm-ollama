@@ -2,8 +2,6 @@ services:
   ollama-rocm:
     image: CI_REGISTRY/git/rocm-ollama:latest
     container_name: ollama-rocm
-    environment:
-      - OLLAMA_DEBUG=1
     volumes:
       - /opt/llm-dl:/opt/llm-dl
     devices:
