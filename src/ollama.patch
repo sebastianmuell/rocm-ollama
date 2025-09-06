@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e2447f32..28200d75 100644
+index d62c8f99..dd2677eb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -100,7 +100,7 @@ if(CMAKE_HIP_COMPILER)
@@ -12,17 +12,17 @@ index e2447f32..28200d75 100644
          list(FILTER AMDGPU_TARGETS EXCLUDE REGEX ${WINDOWS_AMDGPU_TARGETS_EXCLUDE_REGEX})
      endif()
 diff --git a/discover/amd_linux.go b/discover/amd_linux.go
-index 46fba55b..cfd4dea0 100644
+index 1b212053..87f8ab82 100644
 --- a/discover/amd_linux.go
 +++ b/discover/amd_linux.go
-@@ -381,16 +381,6 @@ func AMDGetGPUInfo() ([]RocmGPUInfo, error) {
- 			index:        gpuID,
- 		}
+@@ -412,16 +412,6 @@ func AMDGetGPUInfo() ([]RocmGPUInfo, error) {
+ 		// Ordinal IDs are based on the visible GPUs
+ 		gpuOrdinalID += 1
  
 -		// iGPU detection, remove this check once we can support an iGPU variant of the rocm library
 -		if totalMemory < IGPUMemLimit {
 -			reason := "unsupported Radeon iGPU detected skipping"
--			slog.Info(reason, "id", gpuID, "total", format.HumanBytes2(totalMemory))
+-			slog.Info(reason, "id", gpuInfo.ID, "total", format.HumanBytes2(totalMemory))
 -			unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{
 -				GpuInfo: gpuInfo.GpuInfo,
 -				Reason:  reason,
