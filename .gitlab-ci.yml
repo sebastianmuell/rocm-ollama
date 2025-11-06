@@ -1,14 +1,6 @@
 variables:
   CI_REGISTRY_IMAGE_BASE: "${CI_REGISTRY}/git/$CI_PROJECT_NAME"
   DOCKER_BUILDKIT: 1
-  DOCKER_IPTABLES_LEGACY: 1
-  DOCKER_HOST: "tcp://build:2375"
-  DOCKER_TLS_CERTDIR: ""
-
-services:
-  - name: docker:dind-rootless
-    alias: build
-    command: ["--tls=false", "--storage-driver=fuse-overlayfs"]
 
 image:
   name: docker:git
@@ -23,7 +15,8 @@ build_latest:
   script:
     - |
       docker build --pull \
-      --build-arg BUILDKIT_INLINE_CACHE=1 --output=type=image,compression=zstd \
+      --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg PARALLEL=4 \
+      --output=type=image,compression=zstd \
       --cache-from $CI_REGISTRY_IMAGE:latest \
       -t $CI_PROJECT_NAME:$CI_COMMIT_SHA \
       -t $CI_PROJECT_NAME:latest \

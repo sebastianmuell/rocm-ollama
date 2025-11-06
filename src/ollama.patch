@@ -1,34 +1,26 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d62c8f99..dd2677eb 100644
+index 50a80629..557f9cc2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -100,7 +100,7 @@ if(CMAKE_HIP_COMPILER)
- 
-     find_package(hip REQUIRED)
+
      if(NOT AMDGPU_TARGETS)
--        list(FILTER AMDGPU_TARGETS INCLUDE REGEX "^gfx(900|94[012]|101[02]|1030|110[012]|120[01])$")
-+        list(FILTER AMDGPU_TARGETS INCLUDE REGEX "^gfx(900|94[012]|101[02]|1030|110[012]|115[01]|120[01])$")
-     elseif(WIN32 AND WINDOWS_AMDGPU_TARGETS_EXCLUDE_REGEX)
-         list(FILTER AMDGPU_TARGETS EXCLUDE REGEX ${WINDOWS_AMDGPU_TARGETS_EXCLUDE_REGEX})
+         find_package(hip REQUIRED)
+-        list(FILTER AMDGPU_TARGETS INCLUDE REGEX "^gfx(94[012]|101[02]|1030|110[012]|120[01])$")
++        list(FILTER AMDGPU_TARGETS INCLUDE REGEX "^gfx(94[012]|101[02]|1030|110[012]|115[01]|120[01])$")
      endif()
-diff --git a/discover/amd_linux.go b/discover/amd_linux.go
-index 1b212053..87f8ab82 100644
---- a/discover/amd_linux.go
-+++ b/discover/amd_linux.go
-@@ -412,16 +412,6 @@ func AMDGetGPUInfo() ([]RocmGPUInfo, error) {
- 		// Ordinal IDs are based on the visible GPUs
- 		gpuOrdinalID += 1
- 
--		// iGPU detection, remove this check once we can support an iGPU variant of the rocm library
--		if totalMemory < IGPUMemLimit {
--			reason := "unsupported Radeon iGPU detected skipping"
--			slog.Info(reason, "id", gpuInfo.ID, "total", format.HumanBytes2(totalMemory))
--			unsupportedGPUs = append(unsupportedGPUs, UnsupportedGPUInfo{
--				GpuInfo: gpuInfo.GpuInfo,
--				Reason:  reason,
--			})
--			continue
--		}
- 		minVer, err := strconv.Atoi(RocmComputeMajorMin)
- 		if err != nil {
- 			slog.Error("invalid RocmComputeMajorMin setting", "value", RocmComputeMajorMin, "error", err)
+
+     if(WIN32 AND WINDOWS_AMDGPU_TARGETS_EXCLUDE_REGEX)
+diff --git a/CMakePresets.json b/CMakePresets.json
+index 72417ade..19185f7e 100644
+--- a/CMakePresets.json
++++ b/CMakePresets.json
+@@ -68,7 +68,7 @@
+       "inherits": [ "ROCm" ],
+       "cacheVariables": {
+         "CMAKE_HIP_FLAGS": "-parallel-jobs=4",
+-        "AMDGPU_TARGETS": "gfx940;gfx941;gfx942;gfx1010;gfx1012;gfx1030;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201;gfx908:xnack-;gfx90a:xnack+;gfx90a:xnack-"
++        "AMDGPU_TARGETS": "gfx1150"
+       }
+     },
+     {

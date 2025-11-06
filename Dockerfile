@@ -5,18 +5,21 @@
 
 FROM CI_REGISTRY/git/rocm-base:latest
 
-# Set WORKDIR
+# Set working directory for build
 ENV WDIR=/build
 WORKDIR $WDIR/
 COPY src/*.patch $WDIR/
 
 # Install Ollama
-RUN git clone https://github.com/rjmalagon/ollama-linux-amd-apu ollama && cd ollama && \
+ARG PARALLEL=8
+RUN git clone --single-branch --depth=1 https://github.com/ollama/ollama ollama && cd ollama && \
 	git apply $WDIR/ollama.patch && \
-	cmake --preset 'ROCm 6' && \
-	cmake --build --parallel --preset 'ROCm 6' && \
+	cmake --preset 'ROCm 6' -DOLLAMA_RUNNER_DIR="rocm" && \
+	cmake --build -j ${PARALLEL} --preset 'ROCm 6' && \
 	cmake --install build --component HIP --strip && \
-	( go run . list || true )
+	go mod download && \
+	GOFLAGS="'-ldflags=-w -s'" CGO_ENABLED=1 go build -trimpath -buildmode=pie -o /usr/bin/ollama . && \
+	( ollama list || true )
 
 # Set ENV
 ENV OLLAMA_FLASH_ATTENTION=1
@@ -25,7 +28,7 @@ ENV OLLAMA_HOST=0.0.0.0:11434
 ENV OLLAMA_MODELS=/opt/llm-dl/
 ENV OLLAMA_MAX_LOADED_MODELS=1
 ENV OLLAMA_NUM_PARALLEL=1
-ENV OLLAMA_NEW_ENGINE=1
+ENV OLLAMA_NEW_ENGINE=0
 ENV ANONYMIZED_TELEMETRY=False
 ENV DO_NOT_TRACK=True
 ENV SCARF_NO_ANALYTICS=True
@@ -34,7 +37,9 @@ ENV SCARF_NO_ANALYTICS=True
 VOLUME $OLLAMA_MODELS
 
 # Set ENTRYPOINT
-ENTRYPOINT ["sh", "-c", "cd /$WDIR/ollama; go run . serve"]
+WORKDIR $WDIR/ollama
+ENTRYPOINT ["ollama"]
+CMD ["serve"]
 
 ## Build using:
 # docker build -t piper-rocm .
