@@ -6,7 +6,9 @@ services:
       - /opt/llm-dl:/opt/llm-dl
     devices:
       - /dev/kfd
-      - /dev/dri
+      - /dev/dri/card10
+      - /dev/dri/renderD128
+      - /dev/accel/accel0
     group_add:
       - video
       - render
